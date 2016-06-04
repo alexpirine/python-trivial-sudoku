@@ -115,6 +115,9 @@ class SudokuProblem(object):
             for k in range(9):
                 if v in self.get_in_col('field', x, y, k):
                     appearances += 1
+                    if appearances > 2:
+                        # don't bother finding other possible locations, 2 is already too much
+                        break
                     index = k
             if appearances == 1:
                 self.get_in_col('field', x, y, index).clear()
