@@ -1,10 +1,8 @@
 # python-trivial-sudoku
 
-Simple Python implementation of a sudoku solver
+Simple Python implementation of a Sudoku solver
 
 ## Example
-
-Download or clone the repository, go to your terminal, and try to execute a few  examples:
 
 ```console
 $ ./example.py 
@@ -36,6 +34,80 @@ Solution:
 |953|281|764|
 |426|975|813|
 +---+---+---+
+...
+```
+
+## Installation
+
+### From PyPi
+
+```bash
+pip install trivial-sudoku
+```
+
+### From source
+
+```bash
+git clone https://github.com/alexpirine/python-trivial-sudoku.git
+cd python-trivial-sudoku
+make install
+```
+
+## Usage
+
+Once installed, the Sudoku solver is available in the `sudoku` module:
+
+```pycon
+>>> from sudoku import SudokuProblem
+>>> 
+>>> puzzle = SudokuProblem([
+...   [8,5,0, 0,0,2, 4,0,0],
+...   [7,2,0, 0,0,0, 0,0,9],
+...   [0,0,4, 0,0,0, 0,0,0],
+... 
+...   [0,0,0, 1,0,7, 0,0,2],
+...   [3,0,5, 0,0,0, 9,0,0],
+...   [0,4,0, 0,0,0, 0,0,0],
+... 
+...   [0,0,0, 0,8,0, 0,7,0],
+...   [0,1,7, 0,0,0, 0,0,0],
+...   [0,0,0, 0,3,6, 0,4,0],
+... ])
+>>> 
+>>> print "Sudoku puzzle:"
+Sudoku puzzle:
+>>> puzzle.print_matrix()
++---+---+---+
+|85 |  2|4  |
+|72 |   |  9|
+|  4|   |   |
++---+---+---+
+|   |1 7|  2|
+|3 5|   |9  |
+| 4 |   |   |
++---+---+---+
+|   | 8 | 7 |
+| 17|   |   |
+|   | 36| 4 |
++---+---+---+
+>>> solution = puzzle.solve()
+>>> print "Solution:"
+Solution:
+>>> solution.print_matrix()
++---+---+---+
+|859|612|437|
+|723|854|169|
+|164|379|528|
++---+---+---+
+|986|147|352|
+|375|268|914|
+|241|593|786|
++---+---+---+
+|432|981|675|
+|617|425|893|
+|598|736|241|
++---+---+---+
+>>> 
 ```
 
 ## Heuristics
