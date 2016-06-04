@@ -2,18 +2,18 @@
 # coding: utf-8
 # Copyright (c) 2016 Alexandre Syenchuk (alexpirine)
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if __name__ == '__main__':
     setup(
         name='Trivial-Sudoku',
-        version='1.0',
+        version='1.1',
         url='https://github.com/alexpirine/python-trivial-sudoku',
         license='New BSD License',
         author='Alexandre Syenchuk',
         author_email='as@netica.fr',
         description='A trvial Python implementation of a Sudoku solver',
-        packages=find_packages(),
+        py_modules=('sudoku',),
         include_package_data=True,
         zip_safe=False,
         classifiers=[
