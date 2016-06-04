@@ -118,8 +118,8 @@ But before making recursive guesses, the algorithm tries to find logical moves t
 
 ### Algorithm 1
 
-The algorithm computes all possible values at a specific square. If there is only one possible value, the square is solved.
+The algorithm computes all possible values at a specific location. If there is only one possible value, the location is filled with that value.
 
 ### Algorithm 2
 
-The algorithm successively takes values from 1 to 9, and checks for possible locations in a region (a region being a set of 9 squares in a cell, a row or a column). If only one location is available in the region, it's filled with the value.
+The algorithm successively takes values from 1 to 9, and checks for possible locations in a region (a region being a set of 9 squares in a cell, a row or a column). If only one single location is available in the region for that specific value, the location is filled with that value.
