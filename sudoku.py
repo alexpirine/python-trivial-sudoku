@@ -63,7 +63,7 @@ class SudokuProblem(object):
 
     def set_possible_values(self, x, y):
         impossible_values = set()
-        for k in range(9):
+        for k in range(1, 9):
             # filter out column values
             impossible_values.add(self.get_in_col('matrix', x, y, k))
             # filter out row values
