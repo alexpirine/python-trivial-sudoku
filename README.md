@@ -37,6 +37,8 @@ Solution:
 ...
 ```
 
+See in action: http://sudoku.netica.fr/
+
 ## Installation
 
 ### From PyPi
