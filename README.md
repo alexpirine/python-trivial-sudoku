@@ -1,6 +1,6 @@
 # python-trivial-sudoku
 
-Simple Python implementation of a Sudoku solver
+Simple Python implementation of a Sudoku solver: extremely fast, and under 100 lines of code!
 
 ## Example
 
