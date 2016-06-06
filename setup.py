@@ -7,7 +7,7 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='Trivial-Sudoku',
-        version='1.1',
+        version='2.0',
         url='https://github.com/alexpirine/python-trivial-sudoku',
         license='New BSD License',
         author='Alexandre Syenchuk',

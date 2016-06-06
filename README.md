@@ -5,7 +5,7 @@ Simple Python implementation of a Sudoku solver
 ## Example
 
 ```console
-$ ./example.py 
+$ ./example.py
 EXAMPLE:
 +---+---+---+
 |13 |  6|   |
@@ -60,25 +60,25 @@ make install
 Once installed, the Sudoku solver is available in the `sudoku` module:
 
 ```pycon
->>> from sudoku import SudokuProblem
->>> 
->>> puzzle = SudokuProblem([
-...   [8,5,0, 0,0,2, 4,0,0],
-...   [7,2,0, 0,0,0, 0,0,9],
-...   [0,0,4, 0,0,0, 0,0,0],
-... 
-...   [0,0,0, 1,0,7, 0,0,2],
-...   [3,0,5, 0,0,0, 9,0,0],
-...   [0,4,0, 0,0,0, 0,0,0],
-... 
-...   [0,0,0, 0,8,0, 0,7,0],
-...   [0,1,7, 0,0,0, 0,0,0],
-...   [0,0,0, 0,3,6, 0,4,0],
+>>> from sudoku import Sudoku
+>>>
+>>> puzzle = Sudoku([
+...   8,5,0, 0,0,2, 4,0,0,
+...   7,2,0, 0,0,0, 0,0,9,
+...   0,0,4, 0,0,0, 0,0,0,
+...
+...   0,0,0, 1,0,7, 0,0,2,
+...   3,0,5, 0,0,0, 9,0,0,
+...   0,4,0, 0,0,0, 0,0,0,
+...
+...   0,0,0, 0,8,0, 0,7,0,
+...   0,1,7, 0,0,0, 0,0,0,
+...   0,0,0, 0,3,6, 0,4,0,
 ... ])
->>> 
+>>>
 >>> print "Sudoku puzzle:"
 Sudoku puzzle:
->>> puzzle.print_matrix()
+>>> print puzzle.ascii
 +---+---+---+
 |85 |  2|4  |
 |72 |   |  9|
@@ -95,7 +95,7 @@ Sudoku puzzle:
 >>> solution = puzzle.solve()
 >>> print "Solution:"
 Solution:
->>> solution.print_matrix()
+>>> print solution.ascii
 +---+---+---+
 |859|612|437|
 |723|854|169|
@@ -109,7 +109,7 @@ Solution:
 |617|425|893|
 |598|736|241|
 +---+---+---+
->>> 
+>>>
 ```
 
 ## Heuristics

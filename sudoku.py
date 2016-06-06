@@ -4,164 +4,84 @@
 
 import copy
 
-class SudokuProblem(object):
+ASCII_BOARD_TPL = """
++---+---+---+
+|   |   |   |
+|   |   |   |
+|   |   |   |
++---+---+---+
+|   |   |   |
+|   |   |   |
+|   |   |   |
++---+---+---+
+|   |   |   |
+|   |   |   |
+|   |   |   |
++---+---+---+
+""".strip()
+
+class Sudoku(object):
     def __init__(self, matrix):
-        self.matrix = list()
-        self.field = list()
-        for x in range(9):
-            self.matrix.append(list())
-            self.field.append(list())
-            for y in range(9):
-                self.matrix[x].append(matrix[x][y])
-                if not matrix[x][y]:
-                    self.field[x].append(set(range(1,10)))
-                else:
-                    self.field[x].append(set())
+        self.board = list(matrix)
+        self.moves = [set() if v else set(range(1,10)) for v in self.board]
+        self.unsolved = set([k for k, v in enumerate(self.board) if not v])
+        self.solved = set([k for k, v in enumerate(self.board) if v])
+        self._eliminate_all_bad_moves()
 
-    def print_matrix(self):
-        for k in range(9):
-            if not k % 3:
-                print '+' + ('-'*3 + '+')*3
-            print ''.join([('' if i % 3 else '|') + ('%d' % v if v else ' ') for i, v in enumerate(self.matrix[k])]) + '|'
-        print '+' + ('-'*3 + '+')*3
+    @property
+    def ascii(self):
+        return ASCII_BOARD_TPL.replace(' ', '%d') % tuple(self.board)
 
-    @staticmethod
-    def get_in_col_idx(x, y, k=0):
-        return (x + k) % 9, y
+    def _mark_solved(self, p, v):
+        self.board[p] = v
+        self.moves[p].clear()
+        self.unsolved.remove(p)
+        self.solved.add(p)
 
-    @staticmethod
-    def get_in_row_idx(x, y, k=0):
-        return x, (y + k) % 9
+    def _get_row(self, p):
+        start = p / 9 * 9
+        return set(start + c for c in xrange(9))
 
-    @staticmethod
-    def get_in_cell_idx(x, y, k=0):
-        return x / 3 * 3 + (x + k / 3) % 3, y / 3 * 3 + (y + k) % 3
+    def _get_col(self, p):
+        start = p % 9
+        return set(start + r for r in xrange(0,81,9))
 
-    def get_in_col(self, matrix_type, x, y, k=0):
-        x, y = self.get_in_col_idx(x, y, k)
-        return getattr(self, matrix_type)[x][y]
+    def _get_box(self, p):
+        start = p / 27 * 27 + p % 9 / 3 * 3
+        return set(start + 9 * r + c for r in xrange(3) for c in xrange(3))
 
-    def get_in_row(self, matrix_type, x, y, k=0):
-        x, y = self.get_in_row_idx(x, y, k)
-        return getattr(self, matrix_type)[x][y]
+    def _get_influence(self, p):
+        return set.union(self._get_row(p), self._get_col(p), self._get_box(p)) - set([p]) - self.solved
 
-    def get_in_cell(self, matrix_type, x, y, k=0):
-        x, y = self.get_in_cell_idx(x, y, k)
-        return getattr(self, matrix_type)[x][y]
+    def _eliminate_bad_moves(self, p):
+        for i in self._get_influence(p):
+            self.moves[i] -= set([self.board[p]])
+            if len(self.moves[i]) == 1:
+                self._mark_solved(i, self.moves[i].pop())
+                self._eliminate_bad_moves(i)
 
-    def set_in_col(self, matrix_type, value, x, y, k=0):
-        x, y = self.get_in_col_idx(x, y, k)
-        getattr(self, matrix_type)[x][y] = value
+    def _eliminate_all_bad_moves(self):
+        for s in self.solved.copy():
+            self._eliminate_bad_moves(s)
 
-    def set_in_row(self, matrix_type, value, x, y, k=0):
-        x, y = self.get_in_row_idx(x, y, k)
-        getattr(self, matrix_type)[x][y] = value
-
-    def set_in_cell(self, matrix_type, value, x, y, k=0):
-        x, y = self.get_in_cell_idx(x, y, k)
-        getattr(self, matrix_type)[x][y] = value
-
-    def set_possible_values(self, x, y):
-        impossible_values = set()
-        for k in range(1, 9):
-            # filter out column values
-            impossible_values.add(self.get_in_col('matrix', x, y, k))
-            # filter out row values
-            impossible_values.add(self.get_in_row('matrix', x, y, k))
-            # filter out cell values
-            impossible_values.add(self.get_in_cell('matrix', x, y, k))
-        self.field[x][y] -= impossible_values
-        if len(self.field[x][y]) == 1:
-            self.matrix[x][y] = self.field[x][y].pop()
-            return True
-        else:
-            return False
-
-    def set_cell_values(self, n):
-        x, y = n / 3 * 3, n % 3 * 3
-        advanced = False
-        for v in range(1, 10):
-            appearances = 0
-            for k in range(9):
-                if v in self.get_in_cell('field', x, y, k):
-                    appearances += 1
-                    index = k
-            if appearances == 1:
-                self.get_in_cell('field', x, y, index).clear()
-                self.set_in_cell('matrix', v, x, y, index)
-                advanced = True
-        return advanced
-
-    def set_row_values(self, n):
-        x, y = n, 0
-        advanced = False
-        for v in range(1, 10):
-            appearances = 0
-            for k in range(9):
-                if v in self.get_in_row('field', x, y, k):
-                    appearances += 1
-                    index = k
-            if appearances == 1:
-                self.get_in_row('field', x, y, index).clear()
-                self.set_in_row('matrix', v, x, y, index)
-                advanced = True
-        return advanced
-
-    def set_col_values(self, n):
-        x, y = 0, n
-        advanced = False
-        for v in range(1, 10):
-            appearances = 0
-            for k in range(9):
-                if v in self.get_in_col('field', x, y, k):
-                    appearances += 1
-                    if appearances > 2:
-                        # don't bother finding other possible locations, 2 is already too much
-                        break
-                    index = k
-            if appearances == 1:
-                self.get_in_col('field', x, y, index).clear()
-                self.set_in_col('matrix', v, x, y, index)
-                advanced = True
-        return advanced
-
-    def heuristic1(self):
-        advances = 0
-        advanced = True
-        while advanced:
-            advanced = False
-            for x in range(9):
-                for y in range(9):
-                    if self.matrix[x][y] != 0:
-                        continue
-                    self.set_possible_values(x, y)
-                    if self.matrix[x][y] != 0:
-                        advanced = True
-                        advances += 1
-        return advances
-
-    def heuristic2(self):
-        for n in range(9):
-            if self.set_cell_values(n) or self.set_row_values(n) or self.set_col_values(n):
-                return True
-        return False
+    def _set_uniques_in_area(self):
+        for value in xrange(1, 10):
+            for get_area in [lambda a: self._get_row(a * 9), lambda a: self._get_col(a % 9), lambda a: self._get_box(a / 3 * 27 + a % 3 * 3)]:
+                for a in range(9):
+                    possible_positions = filter(lambda i: value in self.moves[i], get_area(a) - self.solved)
+                    if len(possible_positions) == 1:
+                        self._mark_solved(possible_positions[0], value)
+                        self._eliminate_bad_moves(possible_positions[0])
 
     def solve(self):
-        advanced = True
-        while advanced:
-            advanced = False
-            if self.heuristic1():
-                advanced = True
-            if self.heuristic2():
-                advanced = True
-        for pos in range(9*9):
-            x, y = pos / 9, pos % 9
-            if self.matrix[x][y] != 0:
-                continue
-            for possible_value in self.field[x][y]:
+        prev_unsolved = 0
+        while prev_unsolved != len(self.unsolved):
+            prev_unsolved = len(self.unsolved)
+            self._set_uniques_in_area()
+        for p in self.unsolved:
+            for possible_value in self.moves[p]:
                 test_problem = copy.deepcopy(self)
-                test_problem.matrix[x][y] = possible_value
-                test_problem.field[x][y].clear()
+                test_problem._mark_solved(p, possible_value)
                 solution = test_problem.solve()
                 if solution:
                     return solution
